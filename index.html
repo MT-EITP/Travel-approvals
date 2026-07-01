@@ -51,17 +51,10 @@ const STAFF = [
     title: "Senior Director, Infrastructure Transformation",
     department: "EITP",
     role: "Senior Director",
-    managerChain: [{id: "vp-01", name: "Ghassan Hassan", role "Vice President"},],
+    managerChain: [
+      { id: "vp-01", name: "Ghassan Hassan", role: "Vice President" },
+    ],
   },
-  {
-    id: "sd-02",
-    name: "Linda Park",
-    title: "Senior Director, Engineering",
-    department: "Engineering",
-    role: "Senior Director",
-    managerChain: [],
-  },
-
   // ── Directors ───────────────────────────────────────────────────────────────
   {
     id: "dir-01",
@@ -83,9 +76,9 @@ const STAFF = [
       { id: "sd-01", name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
-    
-// ── Senior Managers ─────────────────────────────────────────────────────────
-{
+
+  // ── Senior Managers ─────────────────────────────────────────────────────────
+  {
     id: "sm-01",
     name: "Matt Buckley",
     title: "Senior Manager, Virtualization",
@@ -95,8 +88,6 @@ const STAFF = [
       { id: "sd-01", name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
-
-
   {
     id: "sm-02",
     name: "Michael Alexander",
@@ -104,7 +95,7 @@ const STAFF = [
     department: "EITP",
     role: "Senior Manager",
     managerChain: [
-      { id: "dir-01", name: "Scott Costa", role: "Director" },
+      { id: "dir-01", name: "Scott Costa",        role: "Director" },
       { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
@@ -115,47 +106,46 @@ const STAFF = [
     department: "EITP",
     role: "Senior Manager",
     managerChain: [
-      { id: "dir-02", name: "Scott Costa", role: "Director" },
-      { id: "sd-02",  name: "Brandt Abercrombie", role: "Senior Director" },
-    ],
-  },
-// ── Staff ───────────────────────────────────────────────────────────────────  
-{
-    id: "staff-00",
-    name: "Jimmy Hightower",
-    title: "Engineer, Datacenters",
-    department: "EITP",
-    role: "Engineer",
-    managerChain: [
-      { id: "sm-03",  name: "Wayne Everett", role: "Senior Manager" },
-      { id: "dir-01", name: "Scott Costa", role: "Director" },
+      { id: "dir-01", name: "Scott Costa",        role: "Director" },
       { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
 
-  
+  // ── Staff ───────────────────────────────────────────────────────────────────
+  {
+    id: "staff-00",
+    name: "Jimmy Hightower",
+    title: "Engineer, Datacenters",
+    department: "EITP",
+    role: "Staff",
+    managerChain: [
+      { id: "sm-03",  name: "Wayne Everett",      role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa",        role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
+    ],
+  },
   {
     id: "staff-01",
     name: "Thomas Armstrong",
     title: "Engineer, Datacenters",
     department: "EITP",
-    role: "Engineer",
+    role: "Staff",
     managerChain: [
-      { id: "sm-03",  name: "Wayne Everett", role: "Senior Manager" },
-      { id: "dir-01", name: "Scott Costa", role: "Director" },
+      { id: "sm-03",  name: "Wayne Everett",      role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa",        role: "Director" },
       { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
   {
     id: "staff-02",
     name: "Michael Mene",
-    title: "Engineers, Datacenters",
+    title: "Engineer, Datacenters",
     department: "EITP",
-    role: "Engineer",
+    role: "Staff",
     managerChain: [
-      { id: "sm-03",  name: "Wayne Everett", role: "Senior Manager" },
-      { id: "dir-01", name: "Scott Costa",  role: "Director" },
-      { id: "sd-01",  name: "Brandt Abercrombie",  role: "Senior Director" },
+      { id: "sm-03",  name: "Wayne Everett",      role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa",        role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
   {
@@ -163,11 +153,11 @@ const STAFF = [
     name: "Bradley Christensen",
     title: "Engineer, Datacenters",
     department: "EITP",
-    role: "Engineer",
+    role: "Staff",
     managerChain: [
-      { id: "sm-02",  name: "Michael Alexander", role: "Senior Manager" },
-      { id: "dir-01", name: "Scott Costa",  role: "Director" },
-      { id: "sd-01",  name: "Brandt Abercrombie",  role: "Senior Director" },
+      { id: "sm-02",  name: "Michael Alexander",  role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa",        role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
   {
@@ -175,10 +165,10 @@ const STAFF = [
     name: "Jonathan Carrasco",
     title: "Engineer, Datacenters",
     department: "EITP",
-    role: "Engineer",
+    role: "Staff",
     managerChain: [
-      { id: "sm-02",  name: "Michael Alexander", role: "Senior Manager" },
-      { id: "dir-01", name: "Scott Costa", role: "Director" },
+      { id: "sm-02",  name: "Michael Alexander",  role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa",        role: "Director" },
       { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
@@ -187,26 +177,25 @@ const STAFF = [
     name: "John Violo",
     title: "Engineer, Datacenters",
     department: "EITP",
-    role: "Engineer",
+    role: "Staff",
     managerChain: [
-      { id: "sm-02",  name: "Michael Alexander", role: "Senior Manager" },
-      { id: "dir-01", name: "Scott Costa", role: "Director" },
+      { id: "sm-02",  name: "Michael Alexander",  role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa",        role: "Director" },
       { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
-{
+  {
     id: "staff-06",
     name: "Amine Benrebouh",
     title: "Engineer, Compute",
     department: "EITP",
-    role: "Engineer",
+    role: "Staff",
     managerChain: [
-      { id: "dir-02", name: "Mani Singh", role: "Director" },
+      { id: "dir-02", name: "Mani Singh",         role: "Director" },
       { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
-
-// ADD MORE STAFF HERE — copy any block above and update the fields
+  // ADD MORE STAFF HERE — copy any block above and update the fields
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 // END OF STAFF DIRECTORY
@@ -654,4 +643,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
-ENDOFFILE
