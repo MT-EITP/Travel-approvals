@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Travel Approvals</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50">
+<div id="root"></div>
+
+<script type="text/babel">
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STAFF DIRECTORY — Edit this section to match your organisation.
+//
+// ROLES:
+//   "Staff"           — submits requests only
+//   "Senior Manager"  — 1st approver
+//   "Director"        — 2nd approver
+//   "Senior Director" — final standard approver
+//   "Vice President"  — auto-added for short-notice travel only
+//                       (domestic < 14 days, international < 21 days)
+//
+// MANAGER CHAIN:
+//   List each person's approvers in order, closest manager first.
+//   Staff need all three levels. Senior Managers need Director + Senior Director.
+//   Directors need Senior Director only. Senior Directors and VPs leave it empty.
+// ─────────────────────────────────────────────────────────────────────────────
+const STAFF = [
+  // ── Vice President ──────────────────────────────────────────────────────────
+  {
+    id: "vp-01",
+    name: "Patricia Walsh",
+    title: "Vice President, Operations",
+    department: "Operations",
+    role: "Vice President",
+    managerChain: [],
+  },
+
+  // ── Senior Directors ────────────────────────────────────────────────────────
+  {
+    id: "sd-01",
+    name: "Marcus Thompson",
+    title: "Senior Director, Sales",
+    department: "Sales",
+    role: "Senior Director",
+    managerChain: [],
+  },
+  {
+    id: "sd-02",
+    name: "Linda Park",
+    title: "Senior Director, Engineering",
+    department: "Engineering",
+    role: "Senior Director",
+    managerChain: [],
+  },
+
+  // ── Directors ───────────────────────────────────────────────────────────────
+  {
+    id: "dir-01",
+    name: "David Osei",
+    title: "Director, Sales",
+    department: "Sales",
+    role: "Director",
+    managerChain: [
+      { id: "sd-01", name: "Marcus Thompson", role: "Senior Director" },
+    ],
+  },
+  {
+    id: "dir-02",
+    name: "Rachel Kim",
+    title: "Director, Engineering",
+    department: "Engineering",
+    role: "Director",
+    managerChain: [
+      { id: "sd-02", name: "Linda Park", role: "Senior Director" },
+    ],
+  },
+  {
+    id: "dir-03",
+    name: "Sophie Grant",
+    title: "Director, Marketing",
+    department: "Marketing",
+    role: "Director",
+    managerChain: [
+      { id: "sd-01", name: "Marcus Thompson", role: "Senior Director" },
+    ],
+  },
+
+  // ── Senior Managers ─────────────────────────────────────────────────────────
+  {
+    id: "sm-01",
+    name: "James Nkosi",
+    title: "Senior Manager, Sales",
+    department: "Sales",
+    role: "Senior Manager",
+    managerChain: [
+      { id: "dir-01", name: "David Osei",      role: "Director" },
+      { id: "sd-01",  name: "Marcus Thompson", role: "Senior Director" },
+    ],
+  },
+  {
+    id: "sm-02",
+    name: "Aisha Patel",
+    title: "Senior Manager, Engineering",
+    department: "Engineering",
+    role: "Senior Manager",
+    managerChain: [
+      { id: "dir-02", name: "Rachel Kim", role: "Director" },
+      { id: "sd-02",  name: "Linda Park", role: "Senior Director" },
+    ],
+  },
+  {
+    id: "sm-03",
+    name: "Tom Bradley",
+    title: "Senior Manager, Marketing",
+    department: "Marketing",
+    role: "Senior Manager",
+    managerChain: [
+      { id: "dir-03", name: "Sophie Grant",    role: "Director" },
+      { id: "sd-01",  name: "Marcus Thompson", role: "Senior Director" },
+    ],
+  },
+
+  // ── Staff ───────────────────────────────────────────────────────────────────
+  {
+    id: "staff-01",
+    name: "Sarah Chen",
+    title: "Account Executive",
+    department: "Sales",
+    role: "Staff",
+    managerChain: [
+      { id: "sm-01",  name: "James Nkosi",     role: "Senior Manager" },
+      { id: "dir-01", name: "David Osei",      role: "Director" },
+      { id: "sd-01",  name: "Marcus Thompson", role: "Senior Director" },
+    ],
+  },
+  {
+    id: "staff-02",
+    name: "Priya Nair",
+    title: "Product Manager",
+    department: "Engineering",
+    role: "Staff",
+    managerChain: [
+      { id: "sm-02",  name: "Aisha Patel", role: "Senior Manager" },
+      { id: "dir-02", name: "Rachel Kim",  role: "Director" },
+      { id: "sd-02",  name: "Linda Park",  role: "Senior Director" },
+    ],
+  },
+  {
+    id: "staff-03",
+    name: "Chris Adebayo",
+    title: "Software Engineer",
+    department: "Engineering",
+    role: "Staff",
+    managerChain: [
+      { id: "sm-02",  name: "Aisha Patel", role: "Senior Manager" },
+      { id: "dir-02", name: "Rachel Kim",  role: "Director" },
+      { id: "sd-02",  name: "Linda Park",  role: "Senior Director" },
+    ],
+  },
+  {
+    id: "staff-04",
+    name: "Maria Lopez",
+    title: "Marketing Coordinator",
+    department: "Marketing",
+    role: "Staff",
+    managerChain: [
+      { id: "sm-03",  name: "Tom Bradley",     role: "Senior Manager" },
+      { id: "dir-03", name: "Sophie Grant",    role: "Director" },
+      { id: "sd-01",  name: "Marcus Thompson", role: "Senior Director" },
+    ],
+  },
+  // ADD MORE STAFF HERE — copy any block above and update the fields
+];
+// ─────────────────────────────────────────────────────────────────────────────
+// END OF STAFF DIRECTORY
+// ─────────────────────────────────────────────────────────────────────────────
+
+const { useState } = React;
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function needsVP(travelDate, tripType, estimatedCost) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const days = travelDate ? Math.ceil((new Date(travelDate) - today) / 86400000) : 999;
+  const shortNotice = (tripType === "domestic" && days < 14) || (tripType === "international" && days < 21);
+  const highCost = Number(estimatedCost) > 2500;
+  return shortNotice || highCost;
+}
+
+function daysUntil(travelDate) {
+  if (!travelDate) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.ceil((new Date(travelDate) - today) / 86400000);
+}
+
+function canAct(req, user) {
+  if (!user || user.id === req.submitterId) return false;
+  const chain = (req.orgChain || []).map(m => m.role);
+  if (needsVP(req.travelDate, req.tripType, req.estimatedCost) && !chain.includes("Vice President")) chain.push("Vice President");
+  const idx = chain.indexOf(user.role);
+  if (idx === -1) return false;
+  const prev = idx > 0 ? chain[idx - 1] : null;
+  const prevOk = !prev || req.approvals[prev]?.status === "Approved";
+  return prevOk && !req.approvals[user.role] && req.status !== "Rejected" && req.status !== "Fully Approved";
+}
+
+function applyAction(req, user, action, comment) {
+  const newApprovals = {
+    ...req.approvals,
+    [user.role]: { status: action === "approve" ? "Approved" : "Rejected", approverName: user.name, comment, at: new Date().toISOString() },
+  };
+  const vp = needsVP(req.travelDate, req.tripType, req.estimatedCost);
+  const chain = (req.orgChain || []).map(m => m.role);
+  if (vp && !chain.includes("Vice President")) chain.push("Vice President");
+  let status = "Pending";
+  if (action === "reject") status = "Rejected";
+  else if (chain.every(r => newApprovals[r]?.status === "Approved")) status = "Fully Approved";
+  else if (vp && newApprovals["Senior Director"]?.status === "Approved" && !newApprovals["Vice President"]) status = "VP Review";
+  return { ...req, approvals: newApprovals, status };
+}
+
+// ── Status styles ─────────────────────────────────────────────────────────────
+const STATUS_CLS = {
+  "Pending":        "bg-amber-50 text-amber-700 border-amber-200",
+  "Rejected":       "bg-red-50 text-red-700 border-red-200",
+  "VP Review":      "bg-purple-50 text-purple-700 border-purple-200",
+  "Fully Approved": "bg-emerald-50 text-emerald-700 border-emerald-200",
+};
+const STATUS_DOT = {
+  "Pending": "bg-amber-400", "Rejected": "bg-red-500",
+  "VP Review": "bg-purple-500", "Fully Approved": "bg-emerald-500",
+};
+
+// ── Badge ─────────────────────────────────────────────────────────────────────
+function Badge({ status }) {
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${STATUS_CLS[status] || STATUS_CLS.Pending}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[status] || "bg-amber-400"}`} />
+      {status}
+    </span>
+  );
+}
+
+// ── Approval timeline ─────────────────────────────────────────────────────────
+function Timeline({ orgChain, approvals, vpNeeded }) {
+  const display = [...(orgChain || [])];
+  if (vpNeeded && !display.find(m => m.role === "Vice President"))
+    display.push({ name: "Vice President", role: "Vice President" });
+  if (!display.length) return null;
+
+  return (
+    <div className="mt-4">
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Approval Chain</p>
+      <div className="flex items-start flex-wrap gap-1">
+        {display.map((person, i) => {
+          const appr = approvals[person.role];
+          const state = appr?.status === "Approved" ? "approved" : appr?.status === "Rejected" ? "rejected" : "pending";
+          const prevOk = i === 0 || approvals[display[i-1].role]?.status === "Approved";
+          const active = prevOk && !appr;
+          const roleShort = person.role === "Vice President" ? "VP"
+            : person.role === "Senior Director" ? "Sr. Dir"
+            : person.role === "Senior Manager" ? "Sr. Mgr"
+            : person.role;
+          return (
+            <div key={i} className="flex items-center">
+              <div className="flex flex-col items-center w-16">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2
+                  ${state==="approved" ? "bg-emerald-500 border-emerald-500 text-white"
+                    : state==="rejected" ? "bg-red-500 border-red-500 text-white"
+                    : active ? "bg-white border-blue-500 text-blue-600 ring-2 ring-blue-100"
+                    : "bg-white border-slate-200 text-slate-400"}`}>
+                  {state==="approved" ? "✓" : state==="rejected" ? "✕" : i+1}
+                </div>
+                <span className={`text-xs mt-1 text-center leading-tight font-medium truncate w-full px-0.5
+                  ${state==="approved" ? "text-emerald-600" : state==="rejected" ? "text-red-600"
+                    : active ? "text-blue-600" : "text-slate-400"}`} title={person.name}>
+                  {person.name?.split(" ")[0]}
+                </span>
+                <span className="text-center leading-tight text-slate-400" style={{fontSize:"0.6rem"}}>{roleShort}</span>
+              </div>
+              {i < display.length-1 && (
+                <div className={`h-0.5 w-4 -mt-8 ${state==="approved" ? "bg-emerald-400" : "bg-slate-200"}`} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {vpNeeded && <p className="mt-2 text-xs text-purple-600 font-medium">⚡ VP approval required — short-notice travel</p>}
+    </div>
+  );
+}
+
+// ── Request card ──────────────────────────────────────────────────────────────
+function RequestCard({ req, user, onApprove, onReject }) {
+  const [comment, setComment] = useState("");
+  const vp = needsVP(req.travelDate, req.tripType, req.estimatedCost);
+  const days = daysUntil(req.travelDate);
+  const can = canAct(req, user);
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow p-5">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-bold text-slate-800 text-sm">{req.submitterName}</span>
+            {req.department && <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{req.department}</span>}
+          </div>
+          <p className="text-base font-semibold text-slate-900">{req.destination}</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {req.tripType === "international" ? "🌍" : "🏢"} {req.tripType.charAt(0).toUpperCase()+req.tripType.slice(1)} · {new Date(req.travelDate).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}
+            {days !== null && <span className={`ml-1 font-semibold ${days<7?"text-red-500":days<14?"text-amber-500":"text-slate-400"}`}> ({days}d away)</span>}
+          </p>
+        </div>
+        <Badge status={req.status} />
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 my-3">
+        {[{l:"Est. Cost",v:`$${Number(req.estimatedCost).toLocaleString()}`},{l:"Duration",v:`${req.duration}d`},{l:"Purpose",v:req.purpose}].map(({l,v})=>(
+          <div key={l} className="bg-slate-50 rounded-lg p-2 text-center">
+            <p className="text-xs text-slate-400 font-medium">{l}</p>
+            <p className="text-sm font-bold text-slate-800 truncate">{v}</p>
+          </div>
+        ))}
+      </div>
+
+      {req.notes && (
+        <div className="mb-3 bg-slate-50 rounded-lg px-3 py-2">
+          <p className="text-xs font-semibold text-slate-500 mb-0.5">Business Justification</p>
+          <p className="text-xs text-slate-600">"{req.notes}"</p>
+        </div>
+      )}
+
+      <Timeline orgChain={req.orgChain} approvals={req.approvals} vpNeeded={vp} />
+
+      {Object.entries(req.approvals).length > 0 && (
+        <div className="mt-3 space-y-1">
+          {Object.entries(req.approvals).map(([role, data]) => (
+            <div key={role} className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg ${data.status==="Approved"?"bg-emerald-50 text-emerald-700":"bg-red-50 text-red-700"}`}>
+              <span>{data.status==="Approved"?"✓":"✕"}</span>
+              <span className="font-semibold">{data.approverName}</span>
+              <span className="opacity-50">({role})</span>
+              {data.comment && <span className="text-slate-500">— {data.comment}</span>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {can && (
+        <div className="mt-4 border-t border-slate-100 pt-4">
+          <input className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-slate-400"
+            placeholder="Add a comment (optional)..." value={comment} onChange={e=>setComment(e.target.value)} />
+          <div className="flex gap-2">
+            <button onClick={()=>{onApprove(req.id,comment);setComment("");}}
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors">✓ Approve</button>
+            <button onClick={()=>{onReject(req.id,comment);setComment("");}}
+              className="flex-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-sm font-semibold py-2 rounded-lg transition-colors">✕ Reject</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── New request modal ─────────────────────────────────────────────────────────
+function NewRequestModal({ onSubmit, onClose, user }) {
+  const [form, setForm] = useState({ destination:"", tripType:"domestic", travelDate:"", duration:"", estimatedCost:"", purpose:"Conference", notes:"" });
+  const vp = (form.travelDate || form.estimatedCost) && needsVP(form.travelDate, form.tripType, form.estimatedCost);
+  const days = daysUntil(form.travelDate);
+  const valid = form.destination && form.travelDate && form.duration && form.estimatedCost;
+  const inp = "w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300";
+  const F = (label, req, el) => <div><label className="block text-xs font-semibold text-slate-600 mb-1">{label}{req?" *":""}</label>{el}</div>;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-screen overflow-y-auto">
+        <div className="p-6 border-b border-slate-100 flex items-start justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">New Travel Request</h2>
+            <p className="text-sm text-slate-500 mt-0.5">Submitting as <strong>{user.name}</strong> · {user.title}</p>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl font-bold mt-1">✕</button>
+        </div>
+        <div className="p-6 space-y-4">
+          {F("Destination", true, <input className={inp} placeholder="City, Country" value={form.destination} onChange={e=>setForm(f=>({...f,destination:e.target.value}))} />)}
+          <div className="grid grid-cols-2 gap-3">
+            {F("Trip Type", false, <select className={inp} value={form.tripType} onChange={e=>setForm(f=>({...f,tripType:e.target.value}))}><option value="domestic">🏢 Domestic</option><option value="international">🌍 International</option></select>)}
+            {F("Purpose", false, <select className={inp} value={form.purpose} onChange={e=>setForm(f=>({...f,purpose:e.target.value}))}>{["Conference","Client Meeting","Training","Site Visit","Sales","Other"].map(p=><option key={p}>{p}</option>)}</select>)}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {F("Travel Date", true, <input type="date" className={inp} value={form.travelDate} onChange={e=>setForm(f=>({...f,travelDate:e.target.value}))} />)}
+            {F("Duration (days)", true, <input type="number" min="1" className={inp} placeholder="e.g. 5" value={form.duration} onChange={e=>setForm(f=>({...f,duration:e.target.value}))} />)}
+          </div>
+          {F("Estimated Cost (USD)", true, <input type="number" min="0" className={inp} placeholder="e.g. 2500" value={form.estimatedCost} onChange={e=>setForm(f=>({...f,estimatedCost:e.target.value}))} />)}
+          {F("Business Justification", false, <textarea className={`${inp} resize-none`} rows={3} placeholder="Explain the business need for this trip..." value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} />)}
+          {vp && (
+            <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 flex gap-2 items-start">
+              <span className="text-purple-500 text-lg">⚡</span>
+              <div>
+                <p className="text-xs font-bold text-purple-700">VP Approval Required</p>
+                <p className="text-xs text-purple-600 mt-0.5">
+                  {Number(form.estimatedCost) > 2500 && (days < (form.tripType === "domestic" ? 14 : 21))
+                    ? "This trip exceeds $2,500 and is short-notice — VP approval required for both reasons."
+                    : Number(form.estimatedCost) > 2500
+                    ? "Estimated cost exceeds $2,500 — VP approval is required."
+                    : `This ${form.tripType} trip is ${days} days away — below the ${form.tripType === "domestic" ? "14-day domestic" : "21-day international"} threshold. VP approval required.`}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="p-6 border-t border-slate-100 flex gap-3">
+          <button onClick={onClose} className="flex-1 border border-slate-200 text-slate-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-slate-50">Cancel</button>
+          <button onClick={()=>valid&&onSubmit(form)} disabled={!valid} className="flex-1 bg-blue-700 hover:bg-blue-800 disabled:opacity-40 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors">Submit Request</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Login screen ──────────────────────────────────────────────────────────────
+function LoginScreen({ onLogin }) {
+  const [sel, setSel] = useState("");
+  const sorted = [...STAFF].sort((a,b)=>a.name.localeCompare(b.name));
+  const person = STAFF.find(s=>s.id===sel);
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 max-w-md w-full">
+        <div className="text-center mb-8">
+          <div className="w-14 h-14 bg-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-white text-3xl">✈</span>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Travel Approvals</h1>
+          <p className="text-slate-500 text-sm mt-2">Select your name to continue</p>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-2">Who are you?</label>
+            <select className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-slate-50"
+              value={sel} onChange={e=>setSel(e.target.value)}>
+              <option value="">— Select your name —</option>
+              {sorted.map(s=><option key={s.id} value={s.id}>{s.name} · {s.title}</option>)}
+            </select>
+          </div>
+          {person && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+              <p className="text-sm font-semibold text-blue-900">{person.name}</p>
+              <p className="text-xs text-blue-600 mt-0.5">{person.title} · {person.department}</p>
+              <p className="text-xs text-blue-600 mt-0.5">Role: <strong>{person.role}</strong> — {person.role==="Staff"?"you can submit travel requests":"you can approve travel requests"}</p>
+            </div>
+          )}
+          <button onClick={()=>sel&&onLogin(person)} disabled={!sel}
+            className="w-full bg-blue-700 hover:bg-blue-800 disabled:opacity-40 text-white font-semibold py-3 rounded-xl transition-colors">
+            Continue
+          </button>
+        </div>
+        <p className="text-xs text-slate-400 text-center mt-6">Not listed? Ask your administrator to add you to the staff directory.</p>
+      </div>
+    </div>
+  );
+}
+
+// ── Main app ──────────────────────────────────────────────────────────────────
+function App() {
+  const [user, setUser]             = useState(null);
+  const [requests, setRequests]     = useState([]);
+  const [showModal, setShowModal]   = useState(false);
+  const [filter, setFilter]         = useState("All");
+  const [nextId, setNextId]         = useState(1);
+
+  if (!user) return <LoginScreen onLogin={setUser} />;
+
+  const isStaff = user.role === "Staff";
+
+  const handleApprove = (id, comment) =>
+    setRequests(prev => prev.map(r => r.id===id ? applyAction(r,user,"approve",comment) : r));
+
+  const handleReject = (id, comment) =>
+    setRequests(prev => prev.map(r => r.id===id ? applyAction(r,user,"reject",comment) : r));
+
+  const handleSubmit = (form) => {
+    setRequests(prev => [...prev, {
+      id: nextId,
+      submitterId: user.id,
+      submitterName: user.name,
+      department: user.department,
+      destination: form.destination,
+      tripType: form.tripType,
+      travelDate: form.travelDate,
+      duration: parseInt(form.duration),
+      estimatedCost: parseFloat(form.estimatedCost),
+      purpose: form.purpose,
+      notes: form.notes,
+      status: "Pending",
+      approvals: {},
+      orgChain: user.managerChain || [],
+      submittedAt: new Date().toISOString(),
+    }]);
+    setNextId(n => n+1);
+    setShowModal(false);
+  };
+
+  const statuses = ["All","Pending","VP Review","Fully Approved","Rejected"];
+  const filtered = filter==="All" ? requests : requests.filter(r=>r.status===filter);
+  const stats = {
+    total: requests.length,
+    pending: requests.filter(r=>["Pending","VP Review"].includes(r.status)).length,
+    approved: requests.filter(r=>r.status==="Fully Approved").length,
+    rejected: requests.filter(r=>r.status==="Rejected").length,
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-40">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-blue-700 rounded-xl flex items-center justify-center">
+              <span className="text-white text-lg">✈</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-slate-900 leading-none">Travel Approvals</h1>
+              <p className="text-xs text-slate-400 mt-0.5">Travel Request & Approval System</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">
+              <div className="w-7 h-7 bg-blue-700 rounded-full flex items-center justify-center text-white text-xs font-bold">{user.name.charAt(0)}</div>
+              <div className="hidden sm:block">
+                <p className="text-xs font-semibold text-slate-800 leading-none">{user.name}</p>
+                <p className="text-xs text-slate-400 leading-none mt-0.5">{user.role}</p>
+              </div>
+            </div>
+            {isStaff && (
+              <button onClick={()=>setShowModal(true)} className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">+ New Request</button>
+            )}
+            <button onClick={()=>setUser(null)} className="text-xs text-slate-400 hover:text-slate-600 border border-slate-200 px-3 py-1.5 rounded-lg">Switch user</button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        {/* Role banner */}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-6 flex items-center gap-3">
+          <span className="text-blue-500 text-lg">ℹ</span>
+          <p className="text-sm text-blue-800">
+            Signed in as <strong>{user.name}</strong> ({user.title}).{" "}
+            {isStaff ? "Use + New Request to submit a travel request. It will be routed to your managers automatically."
+              : "Requests at your approval level will appear below."}
+          </p>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          {[
+            {l:"Total",    v:stats.total,    c:"text-slate-800", bg:"bg-white"},
+            {l:"Pending",  v:stats.pending,  c:"text-amber-700", bg:"bg-amber-50"},
+            {l:"Approved", v:stats.approved, c:"text-emerald-700",bg:"bg-emerald-50"},
+            {l:"Rejected", v:stats.rejected, c:"text-red-700",   bg:"bg-red-50"},
+          ].map(s=>(
+            <div key={s.l} className={`${s.bg} rounded-2xl border border-slate-200 p-4 text-center`}>
+              <p className={`text-2xl font-bold ${s.c}`}>{s.v}</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">{s.l}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
+          {statuses.map(s=>(
+            <button key={s} onClick={()=>setFilter(s)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors ${filter===s?"bg-blue-700 text-white":"bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+              {s}{s!=="All"&&<span className="ml-1.5 opacity-70">{requests.filter(r=>r.status===s).length}</span>}
+            </button>
+          ))}
+        </div>
+
+        {/* Cards */}
+        {filtered.length===0 ? (
+          <div className="text-center py-20 text-slate-400">
+            <div className="text-5xl mb-3">✈️</div>
+            <p className="font-semibold text-slate-500">No requests here yet</p>
+            <p className="text-sm mt-1">{isStaff?"Click + New Request to submit your first travel request.":"Requests pending your approval will appear here."}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filtered.map(req=><RequestCard key={req.id} req={req} user={user} onApprove={handleApprove} onReject={handleReject} />)}
+          </div>
+        )}
+
+        {/* VP thresholds */}
+        <div className="mt-10 bg-white border border-slate-200 rounded-2xl p-5">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">VP Approval Thresholds</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              {icon:"🏢",label:"Domestic Travel",rule:"VP required if booked less than 14 days before departure"},
+              {icon:"🌍",label:"International Travel",rule:"VP required if booked less than 21 days before departure"},
+              {icon:"💰",label:"High-Cost Travel",rule:"VP required if estimated cost exceeds $2,500"},
+            ].map(({icon,label,rule})=>(
+              <div key={label} className="bg-slate-50 rounded-xl p-3 flex items-center gap-3">
+                <span className="text-2xl">{icon}</span>
+                <div>
+                  <p className="text-sm font-bold text-slate-800">{label}</p>
+                  <p className="text-xs text-slate-500">{rule}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {showModal && <NewRequestModal onSubmit={handleSubmit} onClose={()=>setShowModal(false)} user={user} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
+ENDOFFILE
