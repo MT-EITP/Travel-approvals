@@ -37,9 +37,9 @@ const STAFF = [
   // ── Vice President ──────────────────────────────────────────────────────────
   {
     id: "vp-01",
-    name: "Patricia Walsh",
-    title: "Vice President, Operations",
-    department: "Operations",
+    name: "Ghassan Hassan",
+    title: "Vice President, Enterprise Infrastructure",
+    department: "EITP",
     role: "Vice President",
     managerChain: [],
   },
@@ -47,11 +47,11 @@ const STAFF = [
   // ── Senior Directors ────────────────────────────────────────────────────────
   {
     id: "sd-01",
-    name: "Marcus Thompson",
-    title: "Senior Director, Sales",
-    department: "Sales",
+    name: "Brandt Abercrombie",
+    title: "Senior Director, Infrastructure Transformation",
+    department: "EITP",
     role: "Senior Director",
-    managerChain: [],
+    managerChain: [{id: "vp-01", name: "Ghassan Hassan", role "Vice President"},],
   },
   {
     id: "sd-02",
@@ -65,120 +65,148 @@ const STAFF = [
   // ── Directors ───────────────────────────────────────────────────────────────
   {
     id: "dir-01",
-    name: "David Osei",
-    title: "Director, Sales",
-    department: "Sales",
+    name: "Scott Costa",
+    title: "Director, Datacenters",
+    department: "EITP",
     role: "Director",
     managerChain: [
-      { id: "sd-01", name: "Marcus Thompson", role: "Senior Director" },
+      { id: "sd-01", name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
   {
     id: "dir-02",
-    name: "Rachel Kim",
-    title: "Director, Engineering",
-    department: "Engineering",
+    name: "Mani Singh",
+    title: "Director, Compute",
+    department: "EITP",
     role: "Director",
     managerChain: [
-      { id: "sd-02", name: "Linda Park", role: "Senior Director" },
+      { id: "sd-01", name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
-  {
-    id: "dir-03",
-    name: "Sophie Grant",
-    title: "Director, Marketing",
-    department: "Marketing",
-    role: "Director",
+    
+// ── Senior Managers ─────────────────────────────────────────────────────────
+{
+    id: "sm-01",
+    name: "Matt Buckley",
+    title: "Senior Manager, Virtualization",
+    department: "EITP",
+    role: "Senior Manager",
     managerChain: [
-      { id: "sd-01", name: "Marcus Thompson", role: "Senior Director" },
+      { id: "sd-01", name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
 
-  // ── Senior Managers ─────────────────────────────────────────────────────────
-  {
-    id: "sm-01",
-    name: "James Nkosi",
-    title: "Senior Manager, Sales",
-    department: "Sales",
-    role: "Senior Manager",
-    managerChain: [
-      { id: "dir-01", name: "David Osei",      role: "Director" },
-      { id: "sd-01",  name: "Marcus Thompson", role: "Senior Director" },
-    ],
-  },
+
   {
     id: "sm-02",
-    name: "Aisha Patel",
-    title: "Senior Manager, Engineering",
-    department: "Engineering",
+    name: "Michael Alexander",
+    title: "Senior Manager, Datacenters",
+    department: "EITP",
     role: "Senior Manager",
     managerChain: [
-      { id: "dir-02", name: "Rachel Kim", role: "Director" },
-      { id: "sd-02",  name: "Linda Park", role: "Senior Director" },
+      { id: "dir-01", name: "Scott Costa", role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
   {
     id: "sm-03",
-    name: "Tom Bradley",
-    title: "Senior Manager, Marketing",
-    department: "Marketing",
+    name: "Wayne Everett",
+    title: "Senior Manager, Datacenters",
+    department: "EITP",
     role: "Senior Manager",
     managerChain: [
-      { id: "dir-03", name: "Sophie Grant",    role: "Director" },
-      { id: "sd-01",  name: "Marcus Thompson", role: "Senior Director" },
+      { id: "dir-02", name: "Scott Costa", role: "Director" },
+      { id: "sd-02",  name: "Brandt Abercrombie", role: "Senior Director" },
+    ],
+  },
+// ── Staff ───────────────────────────────────────────────────────────────────  
+{
+    id: "staff-00",
+    name: "Jimmy Hightower",
+    title: "Engineer, Datacenters",
+    department: "EITP",
+    role: "Engineer",
+    managerChain: [
+      { id: "sm-03",  name: "Wayne Everett", role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa", role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
 
-  // ── Staff ───────────────────────────────────────────────────────────────────
+  
   {
     id: "staff-01",
-    name: "Sarah Chen",
-    title: "Account Executive",
-    department: "Sales",
-    role: "Staff",
+    name: "Thomas Armstrong",
+    title: "Engineer, Datacenters",
+    department: "EITP",
+    role: "Engineer",
     managerChain: [
-      { id: "sm-01",  name: "James Nkosi",     role: "Senior Manager" },
-      { id: "dir-01", name: "David Osei",      role: "Director" },
-      { id: "sd-01",  name: "Marcus Thompson", role: "Senior Director" },
+      { id: "sm-03",  name: "Wayne Everett", role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa", role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
   {
     id: "staff-02",
-    name: "Priya Nair",
-    title: "Product Manager",
-    department: "Engineering",
-    role: "Staff",
+    name: "Michael Mene",
+    title: "Engineers, Datacenters",
+    department: "EITP",
+    role: "Engineer",
     managerChain: [
-      { id: "sm-02",  name: "Aisha Patel", role: "Senior Manager" },
-      { id: "dir-02", name: "Rachel Kim",  role: "Director" },
-      { id: "sd-02",  name: "Linda Park",  role: "Senior Director" },
+      { id: "sm-03",  name: "Wayne Everett", role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa",  role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie",  role: "Senior Director" },
     ],
   },
   {
     id: "staff-03",
-    name: "Chris Adebayo",
-    title: "Software Engineer",
-    department: "Engineering",
-    role: "Staff",
+    name: "Bradley Christensen",
+    title: "Engineer, Datacenters",
+    department: "EITP",
+    role: "Engineer",
     managerChain: [
-      { id: "sm-02",  name: "Aisha Patel", role: "Senior Manager" },
-      { id: "dir-02", name: "Rachel Kim",  role: "Director" },
-      { id: "sd-02",  name: "Linda Park",  role: "Senior Director" },
+      { id: "sm-02",  name: "Michael Alexander", role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa",  role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie",  role: "Senior Director" },
     ],
   },
   {
     id: "staff-04",
-    name: "Maria Lopez",
-    title: "Marketing Coordinator",
-    department: "Marketing",
-    role: "Staff",
+    name: "Jonathan Carrasco",
+    title: "Engineer, Datacenters",
+    department: "EITP",
+    role: "Engineer",
     managerChain: [
-      { id: "sm-03",  name: "Tom Bradley",     role: "Senior Manager" },
-      { id: "dir-03", name: "Sophie Grant",    role: "Director" },
-      { id: "sd-01",  name: "Marcus Thompson", role: "Senior Director" },
+      { id: "sm-02",  name: "Michael Alexander", role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa", role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
     ],
   },
-  // ADD MORE STAFF HERE — copy any block above and update the fields
+  {
+    id: "staff-05",
+    name: "John Violo",
+    title: "Engineer, Datacenters",
+    department: "EITP",
+    role: "Engineer",
+    managerChain: [
+      { id: "sm-02",  name: "Michael Alexander", role: "Senior Manager" },
+      { id: "dir-01", name: "Scott Costa", role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
+    ],
+  },
+{
+    id: "staff-06",
+    name: "Amine Benrebouh",
+    title: "Engineer, Compute",
+    department: "EITP",
+    role: "Engineer",
+    managerChain: [
+      { id: "dir-02", name: "Mani Singh", role: "Director" },
+      { id: "sd-01",  name: "Brandt Abercrombie", role: "Senior Director" },
+    ],
+  },
+
+// ADD MORE STAFF HERE — copy any block above and update the fields
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 // END OF STAFF DIRECTORY
