@@ -504,6 +504,13 @@ function App() {
     setRequests(prev => prev.map(r => r.id===id ? applyAction(r,user,"reject",comment) : r));
 
   const handleSubmit = (form) => {
+    // Build orgChain: only include approvers whose role is higher than the submitter
+    const roleOrder = ["Senior Manager", "Director", "Senior Director", "Vice President"];
+    const submitterRoleIdx = roleOrder.indexOf(user.role);
+    const orgChain = (user.managerChain || []).filter(m => {
+      const mIdx = roleOrder.indexOf(m.role);
+      return mIdx > submitterRoleIdx;
+    });
     setRequests(prev => [...prev, {
       id: nextId,
       submitterId: user.id,
@@ -518,7 +525,7 @@ function App() {
       notes: form.notes,
       status: "Pending",
       approvals: {},
-      orgChain: user.managerChain || [],
+      orgChain,
       submittedAt: new Date().toISOString(),
     }]);
     setNextId(n => n+1);
