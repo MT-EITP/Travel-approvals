@@ -225,7 +225,7 @@ function canAct(req, user) {
   const idx = chain.indexOf(user.role);
   if (idx === -1) return false;
   const prev = idx > 0 ? chain[idx - 1] : null;
-  const prevOk = !prev || req.approvals[prev]?.status === "Approved";
+  const prevOk = !prev || (req.approvals[prev] && req.approvals[prev].status === "Approved");
   return prevOk && !req.approvals[user.role] && req.status !== "Rejected" && req.status !== "Fully Approved";
 }
 
@@ -239,8 +239,8 @@ function applyAction(req, user, action, comment) {
   if (vp && !chain.includes("Vice President")) chain.push("Vice President");
   let status = "Pending";
   if (action === "reject") status = "Rejected";
-  else if (chain.every(r => newApprovals[r]?.status === "Approved")) status = "Fully Approved";
-  else if (vp && newApprovals["Senior Director"]?.status === "Approved" && !newApprovals["Vice President"]) status = "VP Review";
+  else if (chain.every(r => newApprovals[r] && newApprovals[r].status === "Approved")) status = "Fully Approved";
+  else if (vp && newApprovals["Senior Director"] && newApprovals["Senior Director"].status === "Approved" && !newApprovals["Vice President"]) status = "VP Review";
   return { ...req, approvals: newApprovals, status };
 }
 
@@ -279,8 +279,8 @@ function Timeline({ orgChain, approvals, vpNeeded }) {
       <div className="flex items-start flex-wrap gap-1">
         {display.map((person, i) => {
           const appr = approvals[person.role];
-          const state = appr?.status === "Approved" ? "approved" : appr?.status === "Rejected" ? "rejected" : "pending";
-          const prevOk = i === 0 || approvals[display[i-1].role]?.status === "Approved";
+          const state = appr && appr.status === "Approved" ? "approved" : appr && appr.status === "Rejected" ? "rejected" : "pending";
+          const prevOk = i === 0 || (approvals[display[i-1].role] && approvals[display[i-1].role].status === "Approved");
           const active = prevOk && !appr;
           const roleShort = person.role === "Vice President" ? "VP"
             : person.role === "Senior Director" ? "Sr. Dir"
@@ -299,7 +299,7 @@ function Timeline({ orgChain, approvals, vpNeeded }) {
                 <span className={`text-xs mt-1 text-center leading-tight font-medium truncate w-full px-0.5
                   ${state==="approved" ? "text-emerald-600" : state==="rejected" ? "text-red-600"
                     : active ? "text-blue-600" : "text-slate-400"}`} title={person.name}>
-                  {person.name?.split(" ")[0]}
+                  {person.name ? person.name.split(" ")[0] : ""}
                 </span>
                 <span className="text-center leading-tight text-slate-400" style={{fontSize:"0.6rem"}}>{roleShort}</span>
               </div>
@@ -471,7 +471,7 @@ function LoginScreen({ onLogin }) {
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
               <p className="text-sm font-semibold text-blue-900">{person.name}</p>
               <p className="text-xs text-blue-600 mt-0.5">{person.title} · {person.department}</p>
-              <p className="text-xs text-blue-600 mt-0.5">Role: <strong>{person.role}</strong> — {person.role==="Staff"?"you can submit travel requests":"you can approve travel requests"}</p>
+              <p className="text-xs text-blue-600 mt-0.5">Role: <strong>{person.role}</strong> — {person.role==="Vice President"?"you can approve VP-level requests":"you can submit and approve travel requests"}</p>
             </div>
           )}
           <button onClick={()=>sel&&onLogin(person)} disabled={!sel}
